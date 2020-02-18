@@ -1,0 +1,352 @@
+<html>
+   <head>
+      
+    <script src="json_editor.js"></script>  
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script
+         src="https://code.jquery.com/jquery-3.4.1.js"
+         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+         crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+      <title>Dylan and Ivan's Dope ass media player</title>
+   </head>
+   <style>
+      @import url('https://fonts.googleapis.com/css?family=Montserrat');
+      /*-------------------------------- END ----*/
+      #body-row {
+      margin-left: 0;
+      margin-right: 0;
+      }
+      #sidebar-container {
+      min-height: 100vh;
+      background-color: #132644;
+      padding: 0;
+      /* flex: unset; */
+      }
+      .sidebar-expanded {
+      width: 230px;
+      }
+      .sidebar-collapsed {
+      /*width: 60px;*/
+      width: 100px;
+      }
+      /* ----------| Menu item*/    
+      #sidebar-container .list-group a {
+      height: 50px;
+      color: white;
+      }
+      /* ----------| Submenu item*/    
+      #sidebar-container .list-group li.list-group-item {
+      background-color: #132644;
+      }
+      #sidebar-container .list-group .sidebar-submenu a {
+      height: 45px;
+      padding-left: 30px;
+      }
+      .sidebar-submenu {
+      font-size: 0.9rem;
+      }
+      /* ----------| Separators */    
+      .sidebar-separator-title {
+      background-color: #132644;
+      height: 35px;
+      }
+      .sidebar-separator {
+      background-color: #132644;
+      height: 25px;
+      }
+      .logo-separator {
+      background-color: #132644;
+      height: 60px;
+      }
+      a.bg-dark {
+      background-color: #132644 !important;
+      }
+   </style>
+   <body>
+      <main id="app">
+      <div class="container-fluid p-0">
+         <!-- Bootstrap row -->
+         <div class="row" id="body-row">
+            <!-- Sidebar -->
+            <div id="sidebar-container" class="sidebar-expanded d-none d-md-block">
+               <!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+               <!-- Bootstrap List Group -->
+               <ul class="list-group">
+                  <!-- Separator with title -->
+                  <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+                     <small>MAIN MENU</small>
+                  </li>
+                  <!-- /END Separator -->
+                  <!-- Menu with submenu -->
+                  <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+                     <div class="d-flex w-100 justify-content-start align-items-center">
+                        <span class="fa fa-dashboard fa-fw mr-3"></span> 
+                        <span class="menu-collapsed">Dashboard</span>
+                        <span class="submenu-icon ml-auto"></span>
+                     </div>
+                  </a>
+                  <!-- Submenu content -->
+                  <div id='submenu1' class="collapse sidebar-submenu">
+                     <a href="/signup" class="list-group-item list-group-item-action bg-dark text-white">
+                     <span class="menu-collapsed">Sign Up</span>
+                     </a>
+                     <a href="/logout" class="list-group-item list-group-item-action bg-dark text-white">
+                     <span class="menu-collapsed">Log Out</span>
+                     </a>
+                     <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                     <span class="menu-collapsed">Settings</span>
+                     </a>
+                  </div>
+                  <a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start" v-on:click="moviesClick">
+                     <div class="d-flex w-100 justify-content-start align-items-center">
+                        <span class="fa fa-user fa-fw mr-3"></span>
+                        <span class="menu-collapsed">Movies</span>
+                        <span class="submenu-icon ml-auto"></span>
+                     </div>
+                  </a>
+                  <!-- Submenu content 
+                  <div id='submenu2' class="collapse sidebar-submenu">
+                      <template v-for="(movie, index) in movieData">                      
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white">
+                        <span class="menu-collapsed">{{movieData[index].name}}</span>
+                        </a>
+                    </template> 
+                  </div>
+                  -->
+                  <a href="#" class="bg-dark list-group-item list-group-item-action">
+                     <div class="d-flex w-100 justify-content-start align-items-center" v-on:click="torrentStreamSearchClick">
+                        <span class="fa fa-tasks fa-fw mr-3"></span>
+                        <span class="menu-collapsed">Torrents</span>    
+                     </div>
+                  </a>
+                 
+               </ul>
+               <!-- List Group END-->
+            </div>
+            <!-- sidebar-container END -->
+            <!-- MAIN -->
+            <div class="col">
+               <h1>
+                  Dylan and Ivan's Dope ass media player
+               </h1>
+               <template v-if="(currentView == 'main')">
+                  <h2>
+                     What are you trying to watch?
+                  </h2>
+               </template>
+               <template v-if="(currentView == 'movies' && mediaFilesLoaded == false)"> 
+                 <h2>
+                    Files loading. Please hold.
+                 </h2>
+              </template>   
+               <template v-if="(currentView == 'movies' && mediaFilesLoaded == true)">
+                  <h2>
+                     Select a media file to watch:
+                  </h2>
+                  <div v-if="(!dynamicUrlStatus)">
+                     <h2 style="color:red">
+                        Server App is Offline! Media will not play.
+                     </h2>
+                   </div>
+                  <label>Search</label>
+                  <input v-model="search">
+                  <h4 v-for="movie in filteredList" v-on:click="assignCurrentMovie(movie.id)">
+                     -  {{movie.name}}
+                  </h4>
+                 </template>
+                  <template v-if="(currentView == 'movie')"></div>
+                  <div class="card" >
+                     <h1 class="card-header">
+                     Player</h1s>
+                     <div class="card-body">
+                        <video :key="currentMovieData.url" class="afterglow" width="320" height="240" controls>
+                           <source :src="currentMovieData.url" type="video/mp4">
+                           <source :src="currentMovieData.url"type="video/webm"/>
+                           <source :src="currentMovieData.url" type="video/ogg"/>
+                           <!-- fallback -->
+                            Your browser does not support the <code>video</code> element.
+                         </video>
+                      </div>
+                   </div>
+                </template>
+                <template v-if="(currentView == 'torrentStreamSearch')">
+                  <div class="page-header">
+                     <h1>Streaming Torrent Test</h1>
+                   </div>
+                   <form action="" method="post"></form>
+                     <label for="torrentId">Stream from a magnet link: </label>
+                     <input v-model="currentStreamTorrentData.magnetLink" id= "torrentId" name="torrentId" placeholder="magnet:" value="magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent">
+                     <button type="submit" v-on:click="torrentStreamWatchClick">Stream</button>
+                   </form>
+                  </template>  
+                   <template v-if="(currentView == 'torrentStreamWatch')">
+                   <div class="row">
+                     <div class="col-md-3 col-md-offset-3">
+                       <video
+                         style="height: 400px; width:600px;"
+                         id="videoPlayer"
+                         controls
+                         muted="muted"
+                         autoplay
+                         key=1
+                       >
+                         <source :src="currentStreamTorrentData.url" type="video/mp4" />
+                         <source :src="currentStreamTorrentData.url" type="video/webm" />
+                         <source :src="currentStreamTorrentData.url" type="video/ogg" />
+                       </video>
+                     </div>
+                   </div>
+                </template>  
+
+                <template v-if="(currentView == 'admin')">
+                    <div class='row'>
+                        <div id='editor_holder' class='medium-12 columns'></div>
+                      </div>
+               </template>
+             </div>
+            <!-- Main Col END -->
+         </div>
+         <!-- body-row END -->
+      </div>
+      <!-- container -->
+      test_debug: {{videosBaseUrl}}
+   </main>
+   <script type="text/javascript">
+      var app = new Vue({
+        el: '#app',
+        data: { 
+         // "http://localhost:3000/videos/"  on local machine
+         mediaFilesLoaded: false,
+         dynamicUrlStatus: true,
+         videosBaseUrl: "",
+         search: '',
+          movieData: [],
+          currentMovieData: {
+            id: "",
+            name: "",
+          filePath: "",
+          url: ""
+        },
+          currentStreamTorrentData: {
+            baseUrl: "",
+            id: "",
+            name: "",
+          filePath: "",
+          url: "",
+          magnetLink: ""
+        },
+        currentView: "main",
+        },
+        methods: {
+          assignCurrentMovie: function(id){
+              this.currentMovieData.id = id
+              this.currentMovieData.url = this.videosBaseUrl + this.currentMovieData.id
+              this.currentView = 'movie' 
+          },
+          displayVideoUrl: function (id){
+            return this.videosBaseUrl + id
+            console.log(this.videosBaseUrl + id)
+          },
+          moviesClick: function () {
+            this.currentView = 'movies' 
+          },
+          adminClick: function () {
+            this.currentView = 'admin' 
+          },
+          torrentStreamSearchClick: function () {
+            this.currentView = 'torrentStreamSearch' 
+          },
+          torrentStreamWatchClick: function () {
+            this.currentView = 'torrentStreamWatch' 
+          }
+        },
+        computed: {
+          filteredList() {
+            return this.movieData.filter(movie => {
+              console.log(movie)
+              return movie.name.toLowerCase().includes(this.search.toLowerCase())
+            })
+          }
+        },
+        updated: function() {
+          this.currentMovieData.url = this.videosBaseUrl + this.currentMovieData.id
+          this.currentStreamTorrentData.url = this.currentStreamTorrentData.baseUrl + this.currentStreamTorrentData.magnetLink
+
+          },
+          created: function() {
+            this.currentMovieData.url = this.videosBaseUrl + this.currentMovieData.id
+            var url = "/media-files";
+            var this_app = this;
+            $.ajax({
+              type: "GET",
+              dataType: "json",
+              url: url,
+              cache: false,
+              success: function(data) {
+                console.log("get movie data sucess");
+                console.log(data);
+                this_app.movieData = data;
+                this_app.mediaFilesLoaded = true;
+              },
+              error: function(xhr){
+              console.log(xhr);
+            }
+            });
+            var url = "/dynamic-url";
+            $.ajax({
+              type: "GET",
+              dataType: "json",
+              url: url,
+              cache: false,
+              success: function(data) {
+                this_app.videosBaseUrl = data + '/videos/';
+                this_app.currentStreamTorrentData.baseUrl = data + '/torrent-media/';
+                console.log("got dynamic url")            
+              },
+              error: function(xhr){
+              this_app.dynamicUrlStatus = false;
+               console.log(xhr);
+            }
+            });
+
+
+}
+        
+      })
+      
+   </script>
+   <script>
+      // Hide submenus
+      $('#body-row .collapse').collapse('hide'); 
+      
+      // Collapse/Expand icon
+      $('#collapse-icon').addClass('fa-angle-double-left'); 
+      
+      // Collapse click
+      $('[data-toggle=sidebar-colapse]').click(function() {
+          SidebarCollapse();
+      });
+      
+      function SidebarCollapse () {
+          $('.menu-collapsed').toggleClass('d-none');
+          $('.sidebar-submenu').toggleClass('d-none');
+          $('.submenu-icon').toggleClass('d-none');
+          $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+          
+          // Treating d-flex/d-none on separators with title
+          var SeparatorTitle = $('.sidebar-separator-title');
+          if ( SeparatorTitle.hasClass('d-flex') ) {
+              SeparatorTitle.removeClass('d-flex');
+          } else {
+              SeparatorTitle.addClass('d-flex');
+          }
+          
+          // Collapse/Expand icon
+          $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+      }
+   </script>
+  
+   </body>
+</html>

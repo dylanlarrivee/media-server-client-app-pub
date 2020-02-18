@@ -1,0 +1,52 @@
+{
+  "type": "object",
+  "title": "Admin Details",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "age": {
+      "type": "integer",
+      "title": "Age"
+    },
+    "serverIP": {
+      "type": "string",
+      "title": "Local media server IP Address"
+    },
+    "mediaFolders": {
+      "type": "array",
+      "title": "Media Folders",
+      "items": {
+        "type": "object",
+        "title": "Folders Path",
+        "format": "grid",
+        "properties": {
+          "folderName": {
+            "type": "string",
+            "title": "Folder Name"
+          },
+          "filePath": {
+            "type": "string",
+            "title": "Folder Path"
+          }
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "title": "Location",
+      "properties": {
+        "city": {
+          "type": "string",
+          "title": "City"
+        },
+        "state": {
+          "type": "string",
+          "title": "State"
+        }
+      }
+    }
+  },
+  "format": "grid"
+}

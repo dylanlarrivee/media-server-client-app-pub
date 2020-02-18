@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <title>Login Here</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body class="container">
+    <div class="page-header">
+      <h1>Streaming Torrent Test</h1>
+    </div>
+    <form action="/torrent-media" method="post">
+      <label for="torrentId">Stream from a magnet link: </label>
+      <input id= "torrentId" name="torrentId", placeholder="magnet:" value="magnet:?xt=urn:btih:08ada5a7a6183aae1e09d831df6748d566095a10&dn=Sintel&tr=udp%3A%2F%2Fexplodie.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Ftracker.empire-js.us%3A1337&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337&tr=wss%3A%2F%2Ftracker.btorrent.xyz&tr=wss%3A%2F%2Ftracker.fastcast.nz&tr=wss%3A%2F%2Ftracker.openwebtorrent.com&ws=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2F&xs=https%3A%2F%2Fwebtorrent.io%2Ftorrents%2Fsintel.torrent">
+      <button type="submit">Stream</button>
+    </form>
+    <div class="row">
+      <div class="col-md-3 col-md-offset-3">
+        <video
+          style="height: 400px; width:600px;"
+          id="videoPlayer"
+          controls
+          muted="muted"
+          autoplay
+          key=1
+        >
+          <source src="http://127.0.0.1:3000/torrent-media" type="video/mp4" />
+          <source src="http://127.0.0.1:3000/torrent-media" type="video/webm" />
+          <source src="http://127.0.0.1:3000/torrent-media" type="video/ogg" />
+        </video>
+      </div>
+    </div>
+    
+  </body>
+</html>

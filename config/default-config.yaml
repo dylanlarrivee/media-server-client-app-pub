@@ -1,0 +1,8 @@
+---
+PORT: 3000 
+AWS_REGION: us-west-2
+#MASTER_DATABASE_URL: 
+
+#USERS_DATABASE_URL: postgres://postgres:postgres@localhost:5432/forms_builder_master
+
+DB_USER: postgres

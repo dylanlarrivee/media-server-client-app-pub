@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin Section</title>
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+     -->
+    <script src="json_editor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="medium-12 columns">
+        <h1>Admin Section</h1>
+      </div>
+      <a href="/">Back to Dashboard</a>
+    </div>
+
+    <div class="row">
+      <div class="medium-10 columns">
+        <p>
+          Admin details can be updated below and are stored in a json payload on
+          the database:
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="medium-12-columns">
+        <button id="submit" class="tiny">Submit (save to DB)</button>
+        <button id="restore" class="secondary tiny">Restore to Default</button>
+        <span id="valid_indicator" class="label"></span>
+      </div>
+      <p id="demo"></p>
+    </div>
+    <div class="row">
+      <div id="editor_holder" class="medium-12 columns"></div>
+    </div>
+
+    <script>
+      // This is the starting value for the editor
+      // We will use this to seed the initial editor
+      // and to provide a "Restore to Default" button.
+      // var starting_value = {"name":"Dylan","age":34,"gender":"male","mediaFolders":[{"folderName":"My_Videos","filePath":"/users/dylan/my_videos"},{"folderName":"Downloads","filePath":"/users/dylan/downloads"}],"location":{"city":"Seattle","state":"Washington"}};
+      var starting_value = "";
+
+      function getAjaxData() {
+        var url = "/user-data";
+        return $.ajax({
+          type: "GET",
+          dataType: "json",
+          url: url,
+          cache: false,
+          success: function(data) {
+            console.log("get admin user data sucess");
+            console.log(data);
+            var starting_value = data;
+          },
+          error: function(xhr) {
+            console.log("error");
+            console.log(xhr);
+          }
+        });
+      }
+      $(document).ready(function() {
+        $.when(getAjaxData()).done(function(a1) {
+          // the code here will be executed when all four ajax requests resolve.
+          // a1, a2, a3 and a4 are lists of length 3 containing the response text,
+          // status, and jqXHR object for each of the four ajax calls respectively.
+
+          // Need to parse json twice to unescape it from the database
+          var a1Json = JSON.parse(a1);
+          // Initialize the editor
+          var editor = new JSONEditor(
+            document.getElementById("editor_holder"),
+            {
+              // Enable fetching schemas via ajax
+              ajax: true,
+
+              // The schema for the editor
+              schema: {
+                $ref: "adminSchema.json",
+                format: "grid"
+              },
+
+              // Seed the form with a starting value
+              startval: JSON.parse(a1Json)
+            }
+          );
+          console.log(a1);
+          // Hook up the Restore to Default button
+          document
+            .getElementById("restore")
+            .addEventListener("click", function() {
+              editor.setValue(starting_value);
+            });
+
+          // Hook up the validation indicator to update its
+          // status whenever the editor changes
+          editor.on("change", function() {
+            // Get an array of errors from the validator
+            var errors = editor.validate();
+
+            var indicator = document.getElementById("valid_indicator");
+
+            // Not valid
+            if (errors.length) {
+              indicator.className = "label alert";
+              indicator.textContent = "not valid";
+            }
+            // Valid
+            else {
+              indicator.className = "label success";
+              indicator.textContent = "valid";
+            }
+
+            // Hook up the submit button to log to the console
+            document
+              .getElementById("submit")
+              .addEventListener("click", function() {
+                // Get the value from the editor
+                console.log(editor.getValue());
+                var value = editor.getValue();
+                var valueString = JSON.stringify(value);
+                //document.write(JSON.stringify(value));
+                document.getElementById("demo").innerHTML = JSON.stringify(
+                  value
+                );
+
+                var url = "/admin-save";
+                $.ajax({
+                  type: "POST",
+                  dataType: "json",
+                  url: url,
+                  data: { userProfileData: valueString },
+                  cache: false,
+                  success: function(data) {
+                    console.log("post admin sucess");
+                    console.log(data);
+                  },
+                  error: function(xhr) {
+                    console.log(xhr);
+                  }
+                });
+              });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

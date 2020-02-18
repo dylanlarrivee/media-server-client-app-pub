@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="cache-control" content="no-cache"> 
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Stop Program | Sign In</title>
+<meta name="Description" content=""> 
+<meta name="Keywords" content="">
+<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet"> 
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/main.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div class="container"> 
+	<main id="app">
+		<img src="img/ShawScott_Logo_Gradient.png" alt="DaMp Logo" class="logo" />
+		<form method="POST" action="" class="form" @submit="checkForm, formSubmit">
+			<div class="form-container">
+				<div class="item-1">
+					<input type="text" name="username" v-model="programInfo.user" placeholder="Username" :class="{'errorBorder': (redBorderUser)}" />
+				</div>
+				<div class="item-1">
+					<input type="text" name="password" v-model="programInfo.password" placeholder="Password" :class="{'errorBorder': (redBorderPassword)}" />
+				</div>
+				<div class="item-1 error-container">
+					<p><a href="" class="forgot">Forgot password?</a></p>
+					<ul>
+				      <li v-for="error in errors" class="error-message">{{ error }}</li>
+				    </ul>
+				</div>
+				<div class="item-1">
+					<button type="submit" class="btn-signin" id="next" value="next">SIGN IN</button>
+				</div>
+			</div>
+		</form>
+		
+	</main>  
+	<footer>
+	<p>&copy;2019 All rights reserved.<br />DaMp</p>
+	</footer>  
+</div>
+<script type="text/javascript">
+var app = new Vue({
+	el: '#app',
+	data: {
+		errors:[],
+		redBorderUser:false,
+		redBorderPassword:false,
+		programInfo: {
+			user:null,
+			password:null,
+			programName:null,
+			prefProgram: ''
+		},
+		chooseProgram: ['Program1', 'Program2', 'Program3', 'Program4', 'Program5', 'Program6'],
+	},
+	methods:{
+		checkForm:function(e) {
+		      this.errors = [];
+		      if(!this.programInfo.user) {
+		       this.errors.push("* Username is needed");
+		      	var expr = /^([-!#-'*/-9=?A-Z^-~]+(\.[-!#-'*/-9=?A-Z^-~]+)*|"([]!#-[^-~ \t]|(\\[\t -~]))+")@(([-!#-'*/-9=?A-Z^-~]{1,})+(\.(([-!#-'*/-9=?A-Z^-~]{2,}))+){1,})$/igm;
+		      	this.redBorderUser = true;
+			  } else {
+				this.redBorderUser = false;
+			  }
+
+		      if(!this.programInfo.password){
+		       this.errors.push("* Password needed");
+		    	this.redBorderPassword = true;
+		      } else {
+				this.redBorderPassword = false;
+			  }
+
+		      if(!this.errors.length) return true;
+		      e.preventDefault();
+	    },
+    	next() {
+	      	this.step++;
+	    },
+	    back() {
+	    	this.step--;
+        },
+        formSubmit: function() {
+            var url = "/login";
+            $.ajax({
+              type: "GET",
+              dataType: "json",
+              url: url,
+              cache: false,
+              success: function(data) {
+                console.log(data)            
+              },
+              error: function(xhr){
+              this_app.dynamicUrlStatus = false;
+               console.log(xhr);
+            }
+            });
+        }
+	}
+})
+</script>
+</body>
+
+</html>
